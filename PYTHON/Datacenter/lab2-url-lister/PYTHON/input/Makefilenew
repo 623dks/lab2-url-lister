@@ -1,0 +1,23 @@
+HADOOP=/usr/local/hadoop-3.3.4
+STREAMING=$(HADOOP)/share/hadoop/tools/lib/hadoop-streaming-3.3.4.jar
+INPUT=Datacenter/lab2-url-lister/PYTHON/input
+OUTPUT=/user/jovyan/url-output
+MAPPER=UrlMapper.py
+REDUCER=UrlReducer.py
+
+all: urlrun
+
+hdfs-input:
+	hdfs dfs -mkdir -p $(INPUT)
+	hdfs dfs -put -f * $(INPUT)
+
+urlrun: hdfs-input
+	hadoop jar $(STREAMING) \
+		-mapper $(MAPPER) \
+		-reducer $(REDUCER) \
+		-file $(MAPPER) -file $(REDUCER) \
+		-input $(INPUT) \
+		-output $(OUTPUT)
+
+clean:
+	hdfs dfs -rm -r -f $(OUTPUT)
