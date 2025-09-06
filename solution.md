@@ -23,22 +23,10 @@ make runURL
 hdfs dfs -mkdir -p hdfs://CLUSTERNAME-m/user/USERNAME
    - Run the same Makefile commands from the master node.
 
----
-
-## Issues with Java Combiner
-Hadoop in Java uses the Reducer as a default Combiner to improve efficiency by reducing network traffic. However, when the Reducer applies the ">5 occurrences" filter, it is no longer **associative or commutative**, which breaks the correctness of combining results from multiple nodes.  
-
-For example, if one node counts 4 occurrences of a link and another counts 4 occurrences, each node’s Combiner would discard it individually because it doesn’t meet the threshold. The final Reducer should see 8 occurrences, so the link should be retained.  
-
-This is why a **separate Combiner class** is used, which sums counts without applying the ">5" filter.
-
----
-
 ## Results from Timed Runs
 
 | Environment       | Time (real) | Time (user) | Time (sys) |
 |------------------|------------|------------|------------|
-| JupyterLab Local  | 0m4.937s   | 0m4.987s   | 0m0.536s   |
 | 2-node Cluster    | 0m32.025s  | 0m6.465s   | 0m0.356s   |
 | 4-node Cluster    | 0m30.423s  | 0m7.529s   | 0m0.343s   |
 
@@ -47,9 +35,4 @@ This is why a **separate Combiner class** is used, which sums counts without app
 - Cluster execution time is similar for 2-node and 4-node setups. This is expected for small datasets, where the overhead of distributing executables and files dominates the performance gain from extra nodes.  
 - With larger datasets, cluster performance would improve as multiple cores across nodes can be utilized more efficiently.
 
----
 
-## References
-- [Hadoop WordCount Tutorial](https://hadoop.apache.org/docs/stable/hadoop-mapreduce-client/hadoop-mapreduce-client-core/MapReduceTutorial.html)  
-- [Java Regular Expressions](http://www.vogella.com/tutorials/JavaRegularExpressions/article.html)  
-- [Hadoop Streaming Documentation](https://hadoop.apache.org/docs/stable/hadoop-streaming/HadoopStreaming.html)
